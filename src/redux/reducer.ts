@@ -1,9 +1,11 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
-import folderReducer from './folder/folderSlice';
+import studentReducer from './student/studentSlice';
+import subjectReducer from './subject/subjectSlice';
 
 const rootReducer = combineReducers({
-  folderReducer: folderReducer,
+  studentReducer: studentReducer,
+  subjectReducer: subjectReducer,
 });
 
 export default rootReducer;

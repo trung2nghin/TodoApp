@@ -1,9 +1,8 @@
 export interface Subject {
-  id: number;
-  title: string;
-  desc: string;
-  priority: string;
-  createAt: string;
-  status: string;
-  exist: boolean;
+  createdAt: string;
+  name: string;
+  teacher: string;
+  classroom: string;
+  student: Array<string>;
+  id: string;
 }

@@ -1,21 +1,47 @@
 import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+
+import { Student } from '../../types/student';
 import { Subject } from '../../types/subject';
 
-export const Stack = {
-  NOTE: 'NOTE',
-  DETAIL: 'DETAIL',
-};
-
 export type RootStackParamList = {
-  NOTE: {
-    data: Subject;
-    index: number;
+  HOME: undefined;
+  LIST_STUDENT: undefined;
+  STUDENT_INFO: {
+    item: Student;
   };
-  DETAIL: {
-    noteData: Subject;
+  ADD_STUDENT: undefined;
+  LIST_SUBJECT: undefined;
+  SUBJECT_INFO: {
+    item: Subject;
   };
+  ADD_SUBJECT: undefined;
 };
 
-export type NoteScreenRouteProp = RouteProp<RootStackParamList, 'NOTE'>;
+/*##### ROUTE PARAMS #####*/
 
-export type DetailScreenRouteProp = RouteProp<RootStackParamList, 'DETAIL'>;
+export type HomeScreenRouteProp = RouteProp<RootStackParamList, 'HOME'>;
+
+export type StudentInfoScreenRouteProp = RouteProp<
+  RootStackParamList,
+  'STUDENT_INFO'
+>;
+
+export type SubjectInfoScreenRouteProp = RouteProp<
+  RootStackParamList,
+  'SUBJECT_INFO'
+>;
+
+/*##### ROUTE STACK #####*/
+
+export type HomeScreenProp = StackNavigationProp<RootStackParamList, 'HOME'>;
+
+export type ListStudentScreenProp = StackNavigationProp<
+  RootStackParamList,
+  'LIST_STUDENT'
+>;
+
+export type ListSubjectScreenProp = StackNavigationProp<
+  RootStackParamList,
+  'LIST_SUBJECT'
+>;
