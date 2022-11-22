@@ -1,5 +1,6 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import {
+  Alert,
   Image,
   KeyboardAvoidingView,
   SafeAreaView,
@@ -10,9 +11,10 @@ import {
 } from 'react-native';
 import { useForm } from 'react-hook-form';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { useAppDispatch, useAppSelector } from '../../hooks/useRedux';
-import { postStudent, putStudent } from '../../redux/student/studentThunk';
+import { getStudent, putStudent } from '../../redux/student/studentThunk';
 import { Colors, Metrics } from '../../assets';
 import { FormValues } from '../../types/hook-form-types';
 import InputForm from '../components/InputForm';
@@ -22,14 +24,20 @@ import { Subject } from '../../types/subject';
 import { ImageData, ImageDataType } from '../AddStudent/ImageData';
 import { StudentInfoScreenRouteProp } from '../../navigation/configs';
 
-const AddStudentScreen: FC = () => {
+const StudentInfoScreen: FC = () => {
   const { params } = useRoute<StudentInfoScreenRouteProp>();
   const [pickImg, setPickImg] = useState<ImageDataType>();
-  const [subjectData, setSubjectData] = useState<Array<Subject>>([]);
+  const [subjectData, setSubjectData] = useState<Array<Subject>>(
+    params.item.subject,
+  );
 
   const { goBack } = useNavigation();
   const dispatch = useAppDispatch();
   const { data } = useAppSelector(state => state.reducer.subjectReducer);
+
+  const { dataStudent, error, loading } = useAppSelector(
+    state => state.reducer.studentReducer,
+  );
 
   useEffect(() => {
     dispatch(getSubject());
@@ -49,6 +57,13 @@ const AddStudentScreen: FC = () => {
     },
   });
 
+  const parentCallbackDelete = useCallback((child: Subject) => {
+    setSubjectData(e => {
+      let a = e.filter(item => item.id !== child.id);
+      return a;
+    });
+  }, []);
+
   const parentCallback = useCallback((child: Subject) => {
     setSubjectData(e => {
       let a = e.filter(item => item.id !== child.id);
@@ -57,14 +72,19 @@ const AddStudentScreen: FC = () => {
   }, []);
 
   const onSubmit = useCallback(
-    (data: any) => {
+    async (data: any) => {
       let payload = {
         ...data,
         subject: subjectData,
-        id: '',
+        id: params.item.id,
         avatar: pickImg?.uri,
       };
-      dispatch(putStudent(payload));
+      await dispatch(putStudent(payload));
+      if (error === null) {
+        Alert.alert('SUCCESS TO EDIT STUDENT');
+      } else {
+        Alert.alert('FAIL TO EDIT STUDENT');
+      }
     },
     [subjectData, pickImg],
   );
@@ -73,37 +93,32 @@ const AddStudentScreen: FC = () => {
     <KeyboardAvoidingView style={styles.container}>
       <SafeAreaView>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => goBack()}>
-            <Text>Back</Text>
+          <TouchableOpacity
+            onPress={async () => {
+              goBack();
+              await dispatch(getStudent(1));
+            }}>
+            <Ionicons name={'chevron-back'} size={30} color={Colors.black} />
           </TouchableOpacity>
-          <Text>STUDENT INFO</Text>
+          <Text style={styles.txt}>STUDENT INFO</Text>
         </View>
-        <View
-          style={{
-            width: '100%',
-            height: Metrics.screen.width / 6,
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-            marginBottom: 24,
-          }}>
+        <Text style={[styles.txt, { marginBottom: 16 }]}>Pick your avatar</Text>
+        <View style={styles.viewImg}>
           {ImageData.map((e, i) => (
             <TouchableOpacity
               key={e.id}
               onPress={() => {
                 setPickImg(e);
               }}
-              style={{
-                width: Metrics.screen.width / 5.6,
-                height: Metrics.screen.width / 5.6,
-                borderWidth: 4,
-                borderColor: i + 1 === pickImg?.id ? 'red' : 'white',
-                borderRadius: 40,
-              }}>
+              style={[
+                styles.btnImg,
+                { borderColor: i + 1 === pickImg?.id ? 'red' : 'white' },
+              ]}>
               <Image
                 source={{
                   uri: e.uri,
                 }}
-                style={{ width: '100%', height: '100%', borderRadius: 40 }}
+                style={styles.img}
               />
             </TouchableOpacity>
           ))}
@@ -134,10 +149,10 @@ const AddStudentScreen: FC = () => {
             control={control}
             rules={{
               maxLength: { value: 20, message: 'Exceeded allowed characters' },
-              // pattern: {
-              //   value: /^[A-Za-z]+$/i,
-              //   message: 'Invalid mail format',
-              // },
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: 'Invalid mail format',
+              },
               required: { value: true, message: 'Required Information' },
             }}
             name={'email'}
@@ -146,18 +161,22 @@ const AddStudentScreen: FC = () => {
           />
         </View>
         <ListSubject data={data} parentCallback={parentCallback} />
-        <ListSubject data={subjectData} />
+        <ListSubject
+          data={subjectData}
+          parentCallbackDelete={parentCallbackDelete}
+          isStudentList
+        />
         <TouchableOpacity
           onPress={handleSubmit(onSubmit)}
           style={styles.btnSubmit}>
-          <Text style={{ color: Colors.white }}>EDIT STUDENT</Text>
+          <Text style={styles.txtEdit}>EDIT STUDENT</Text>
         </TouchableOpacity>
       </SafeAreaView>
     </KeyboardAvoidingView>
   );
 };
 
-export default AddStudentScreen;
+export default StudentInfoScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -173,6 +192,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  viewImg: {
+    width: '100%',
+    height: Metrics.screen.width / 6,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 24,
+  },
   input: {
     backgroundColor: Colors.white,
     width: '100%',
@@ -186,5 +212,18 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.black,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  txt: {
+    fontSize: 17,
+    color: Colors.black,
+    textAlign: 'center',
+  },
+  txtEdit: { color: Colors.white },
+  img: { width: '100%', height: '100%', borderRadius: 40 },
+  btnImg: {
+    width: Metrics.screen.width / 5.6,
+    height: Metrics.screen.width / 5.6,
+    borderWidth: 4,
+    borderRadius: 40,
   },
 });

@@ -1,7 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Student } from '../../types/student';
 
-import { getStudent, postStudent } from './studentThunk';
+import {
+  getAllStudent,
+  getStudent,
+  postStudent,
+  putStudent,
+} from './studentThunk';
 
 interface StudentState {
   loading: boolean;
@@ -41,6 +46,19 @@ export const studentSlice = createSlice({
       .addCase(getStudent.rejected, (state, action: PayloadAction<any>) => {
         state.error = action.payload;
       })
+      .addCase(getAllStudent.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(
+        getAllStudent.fulfilled,
+        (state, action: PayloadAction<Student[]>) => {
+          state.loading = false;
+          state.dataStudent = action.payload;
+        },
+      )
+      .addCase(getAllStudent.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload;
+      })
       .addCase(postStudent.pending, (state, action) => {
         state.loading = true;
       })
@@ -48,10 +66,23 @@ export const studentSlice = createSlice({
         postStudent.fulfilled,
         (state, action: PayloadAction<Student[]>) => {
           state.loading = false;
-          state.dataStudent = state.dataStudent.concat(action.payload);
+          // state.dataStudent = state.dataStudent.concat(action.payload);
         },
       )
       .addCase(postStudent.rejected, (state, action: PayloadAction<any>) => {
+        state.error = action.payload;
+      })
+      .addCase(putStudent.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(
+        putStudent.fulfilled,
+        (state, action: PayloadAction<Student[]>) => {
+          state.loading = false;
+          // state.dataStudent = state.dataStudent.concat(action.payload);
+        },
+      )
+      .addCase(putStudent.rejected, (state, action: PayloadAction<any>) => {
         state.error = action.payload;
       });
   },

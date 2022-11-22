@@ -19,6 +19,22 @@ export const getStudent = createAsyncThunk(
   },
 );
 
+export const getAllStudent = createAsyncThunk(
+  'allStudent/getAllStudent',
+  async (payload, thunkApi) => {
+    try {
+      let response: any;
+      await StudentAPI.getAllStudentThunk().then(res => {
+        response = res.data;
+      });
+      return response;
+    } catch (error: any) {
+      const message = error.message;
+      return thunkApi.rejectWithValue(message);
+    }
+  },
+);
+
 export const postStudent = createAsyncThunk(
   'student/postStudent',
   async (payload: Student, thunkApi) => {
@@ -36,7 +52,7 @@ export const postStudent = createAsyncThunk(
 );
 
 export const putStudent = createAsyncThunk(
-  'student/postStudent',
+  'student/putStudent',
   async (payload: Student, thunkApi) => {
     try {
       let response: any;

@@ -1,5 +1,4 @@
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -11,9 +10,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 import { Colors, Metrics } from '../../assets';
 import { useAppDispatch, useAppSelector } from '../../hooks/useRedux';
-
 import { ListStudentScreenProp } from '../../navigation/configs';
 import { setStudentReload } from '../../redux/student/studentSlice';
 import { getStudent } from '../../redux/student/studentThunk';
@@ -24,13 +25,11 @@ const ListStudentScreen: FC = () => {
   const [onEndReachedCount, setOnEndReachedCount] = useState(1);
   const [begin, setBegin] = useState(false);
 
-  const { navigate, goBack, replace } = useNavigation<ListStudentScreenProp>();
-  const isFocus = useIsFocused();
+  const { navigate, goBack } = useNavigation<ListStudentScreenProp>();
   const { loading, dataStudent } = useAppSelector(
     state => state.reducer.studentReducer,
   );
   const dispatch = useAppDispatch();
-  console.log(dataStudent.length, onEndReachedCount);
 
   useEffect(() => {
     dispatch(getStudent(onEndReachedCount));
@@ -62,7 +61,10 @@ const ListStudentScreen: FC = () => {
     ({ item }: { item: Student }) => {
       return (
         <TouchableOpacity
-          onPress={() => navigate('STUDENT_INFO', { item })}
+          onPress={() => {
+            navigate('STUDENT_INFO', { item });
+            dispatch(setStudentReload());
+          }}
           style={styles.btnListChildContainer}>
           <Image source={{ uri: item?.avatar }} style={styles.img} />
           <View style={styles.viewTxtInfo}>
@@ -86,17 +88,18 @@ const ListStudentScreen: FC = () => {
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => {
-            goBack(), dispatch(setStudentReload());
+            goBack();
+            dispatch(setStudentReload());
           }}>
-          <Text>Back</Text>
+          <Ionicons name={'chevron-back'} size={30} color={Colors.black} />
         </TouchableOpacity>
-        <Text>LIST STUDENT</Text>
+        <Text style={styles.txt}>LIST STUDENT</Text>
         <TouchableOpacity
           onPress={() => {
             navigate('ADD_STUDENT');
             dispatch(setStudentReload());
           }}>
-          <Text>ADD</Text>
+          <Ionicons name={'add-circle'} size={24} color={Colors.black} />
         </TouchableOpacity>
       </View>
       <FlatList
@@ -121,7 +124,7 @@ const ListStudentScreen: FC = () => {
           );
         }}
         ItemSeparatorComponent={() => (
-          <View style={styles.viewSeparatorComponent}></View>
+          <View style={styles.viewSeparatorComponent} />
         )}
       />
     </SafeAreaView>
@@ -160,6 +163,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   viewTxtInfo: { width: '64%' },
+  txt: {
+    fontSize: 17,
+    color: Colors.black,
+    textAlign: 'center',
+  },
   txtInfo: {
     fontSize: 13,
     color: Colors.black,

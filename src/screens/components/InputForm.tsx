@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { TextInput } from 'react-native';
-import { useForm, Controller, Resolver } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 
 import { StyleSheet, Text, View } from 'react-native';
 import { Colors } from '../../assets';

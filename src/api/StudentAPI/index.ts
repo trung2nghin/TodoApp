@@ -5,11 +5,14 @@ const StudentAPI = {
   getStudentThunk(page: number) {
     return AxiosClient.get(`student?p=${page}&l=30`);
   },
+  getAllStudentThunk() {
+    return AxiosClient.get('student');
+  },
   postStudentThunk(payload: Student) {
     return AxiosClient.post('student', payload);
   },
   putStudentThunk(payload: Student) {
-    return AxiosClient.post(`student/:${payload.id}`, payload);
+    return AxiosClient.put(`student/${payload.id}`, payload);
   },
 };
 

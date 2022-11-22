@@ -16,6 +16,7 @@ interface Props {
   parentCallback?: (item: Subject) => void;
   parentCallbackDelete?: (item: Subject) => void;
   isStudentList?: boolean;
+  isDel?: boolean;
 }
 
 const ListSubject: FC<Props> = ({
@@ -23,6 +24,7 @@ const ListSubject: FC<Props> = ({
   parentCallback,
   isStudentList,
   parentCallbackDelete,
+  isDel,
 }) => {
   const onAddSubject = useCallback((item: Subject) => {
     !!parentCallback && parentCallback(item);
@@ -34,7 +36,7 @@ const ListSubject: FC<Props> = ({
       <TouchableOpacity style={styles.btn} onPress={() => onAddSubject(item)}>
         {!isStudentList && <Text style={styles.txt}>{item.name}</Text>}
         <Ionicons
-          name={isStudentList ? 'chevron-up' : 'chevron-down'}
+          name={isStudentList ? 'chevron-up' : isDel ? 'close' : 'chevron-down'}
           size={24}
         />
         {isStudentList && <Text style={styles.txt}>{item.name}</Text>}
@@ -48,12 +50,8 @@ const ListSubject: FC<Props> = ({
       renderItem={renderItem}
       showsHorizontalScrollIndicator={false}
       horizontal
-      ItemSeparatorComponent={() => <View style={{ width: 1 }} />}
-      style={{
-        width: '100%',
-        height: 120,
-        marginBottom: 24,
-      }}
+      ItemSeparatorComponent={() => <View style={styles.sepa} />}
+      style={styles.list}
     />
   );
 };
@@ -61,6 +59,11 @@ const ListSubject: FC<Props> = ({
 export default ListSubject;
 
 const styles = StyleSheet.create({
+  list: {
+    width: '100%',
+    height: 120,
+    marginBottom: 24,
+  },
   txt: {
     fontSize: 13,
     width: '90%',
@@ -74,4 +77,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  sepa: { width: 1 },
 });

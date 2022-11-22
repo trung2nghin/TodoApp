@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useForm } from 'react-hook-form';
 import { useNavigation } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { useAppDispatch, useAppSelector } from '../../hooks/useRedux';
 import { getStudent, postStudent } from '../../redux/student/studentThunk';
@@ -24,17 +25,13 @@ import { ImageData, ImageDataType } from './ImageData';
 import { AddStudentScreenProp } from '../../navigation/configs';
 
 const AddStudentScreen: FC = () => {
-  const { data } = useAppSelector(state => state.reducer.subjectReducer);
-  const { dataStudent, error, loading } = useAppSelector(
-    state => state.reducer.studentReducer,
-  );
   const [pickImg, setPickImg] = useState<ImageDataType>();
   const [subjectData, setSubjectData] = useState<Array<Subject>>([]);
-  const [onChangeDataStudent, setOnChangeDataStudent] =
-    useState<Array<Subject>>(data);
-  const [onHandleSubmit, setOnHandleSubmit] = useState(false);
   const { goBack, navigate } = useNavigation<AddStudentScreenProp>();
   const dispatch = useAppDispatch();
+
+  const { data } = useAppSelector(state => state.reducer.subjectReducer);
+  const { error } = useAppSelector(state => state.reducer.studentReducer);
 
   useEffect(() => {
     dispatch(getSubject());
@@ -53,10 +50,7 @@ const AddStudentScreen: FC = () => {
     },
   });
 
-  const parentCallback = useCallback((child: Subject) => {
-    console.log(child);
-
-    // setOnChangeDataStudent(e => console.log(e));
+  let parentCallback = useCallback((child: Subject) => {
     setSubjectData(e => {
       let a = e.filter(item => item.id !== child.id);
       return [...a, child];
@@ -64,10 +58,7 @@ const AddStudentScreen: FC = () => {
   }, []);
 
   const parentCallbackDelete = useCallback((child: Subject) => {
-    setSubjectData(e => {
-      let a = e.filter(item => item.id !== child.id);
-      return [...a, child];
-    });
+    setSubjectData(e => e.filter(item => item.id !== child.id));
   }, []);
 
   const onSubmit = useCallback(
@@ -78,7 +69,6 @@ const AddStudentScreen: FC = () => {
         id: '',
         avatar: pickImg?.uri,
       };
-      setOnHandleSubmit(true);
       await dispatch(postStudent(payload));
       if (error === null) {
         await dispatch(getStudent(1));
@@ -100,36 +90,29 @@ const AddStudentScreen: FC = () => {
               goBack();
               dispatch(getStudent(1));
             }}>
-            <Text>Back</Text>
+            <Ionicons name={'chevron-back'} size={30} color={Colors.black} />
           </TouchableOpacity>
-          <Text>ADD STUDENT</Text>
+          <Text style={styles.txt}>ADD STUDENT</Text>
         </View>
-        <View
-          style={{
-            width: '100%',
-            height: Metrics.screen.width / 6,
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-            marginBottom: 24,
-          }}>
+        <Text style={[styles.txt, { marginBottom: 16, textAlign: 'center' }]}>
+          Pick your avatar
+        </Text>
+        <View style={styles.imgView}>
           {ImageData.map((e, i) => (
             <TouchableOpacity
               key={e.id}
               onPress={() => {
                 setPickImg(e);
               }}
-              style={{
-                width: Metrics.screen.width / 5.6,
-                height: Metrics.screen.width / 5.6,
-                borderWidth: 4,
-                borderColor: i + 1 === pickImg?.id ? 'red' : 'white',
-                borderRadius: 40,
-              }}>
+              style={[
+                styles.btnImg,
+                { borderColor: i + 1 === pickImg?.id ? 'red' : 'white' },
+              ]}>
               <Image
                 source={{
                   uri: e.uri,
                 }}
-                style={{ width: '100%', height: '100%', borderRadius: 40 }}
+                style={styles.img}
               />
             </TouchableOpacity>
           ))}
@@ -160,10 +143,10 @@ const AddStudentScreen: FC = () => {
             control={control}
             rules={{
               maxLength: { value: 20, message: 'Exceeded allowed characters' },
-              // pattern: {
-              //   value: /^[A-Za-z]+$/i,
-              //   message: 'Invalid mail format',
-              // },
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: 'Invalid mail format',
+              },
               required: { value: true, message: 'Required Information' },
             }}
             name={'email'}
@@ -172,13 +155,6 @@ const AddStudentScreen: FC = () => {
           />
         </View>
         <ListSubject data={data} parentCallback={parentCallback} />
-        {subjectData.length < 1 && onHandleSubmit ? (
-          <Text style={{ color: Colors.red }}>
-            Please choose at least 1 subject
-          </Text>
-        ) : (
-          <></>
-        )}
         <ListSubject
           data={subjectData}
           isStudentList
@@ -187,7 +163,7 @@ const AddStudentScreen: FC = () => {
         <TouchableOpacity
           onPress={handleSubmit(onSubmit)}
           style={styles.btnSubmit}>
-          <Text style={{ color: Colors.white }}>ADD STUDENT</Text>
+          <Text style={styles.txtAdd}>ADD STUDENT</Text>
         </TouchableOpacity>
       </SafeAreaView>
     </KeyboardAvoidingView>
@@ -210,6 +186,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  imgView: {
+    width: '100%',
+    height: Metrics.screen.width / 6,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 24,
+  },
+  btnImg: {
+    width: Metrics.screen.width / 5.6,
+    height: Metrics.screen.width / 5.6,
+    borderWidth: 4,
+    borderRadius: 40,
+  },
+  img: { width: '100%', height: '100%', borderRadius: 40 },
   input: {
     backgroundColor: Colors.white,
     width: '100%',
@@ -224,4 +214,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  txt: {
+    fontSize: 17,
+    color: Colors.black,
+  },
+  txtAdd: { color: Colors.white },
 });

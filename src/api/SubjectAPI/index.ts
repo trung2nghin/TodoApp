@@ -8,6 +8,9 @@ const SubjectAPI = {
   postSubjectThunk(payload: Subject) {
     return AxiosClient.post('subject', payload);
   },
+  putSubjectThunk(payload: Subject) {
+    return AxiosClient.put(`subject/${payload.id}`, payload);
+  },
 };
 
 export default SubjectAPI;

@@ -1,32 +1,57 @@
-import React, { FC, useCallback, useEffect } from 'react';
+import React, { FC } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { HomeScreenProp } from '../../navigation/configs';
-import StudentAPI from '../../api/StudentAPI';
-import { useAppDispatch, useAppSelector } from '../../hooks/useRedux';
-import { getStudent } from '../../redux/student/studentThunk';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { Colors } from '../../assets';
 
 const HomeScreen: FC = () => {
   const { navigate } = useNavigation<HomeScreenProp>();
-  // launchCamera(options?, callback);
 
   return (
-    <View>
-      <Text>HomeScreen</Text>
+    <View style={styles.container}>
+      <Text style={[styles.txt, styles.txtTitle]}>Student Management</Text>
       <TouchableOpacity
-        style={{ width: 100, height: 25, backgroundColor: 'red' }}
+        style={[styles.btn]}
         onPress={() => {
           navigate('LIST_STUDENT');
-        }}></TouchableOpacity>
+        }}>
+        <Text style={styles.txt}>Student</Text>
+      </TouchableOpacity>
       <TouchableOpacity
-        style={{ width: 100, height: 25, backgroundColor: 'blue' }}
-        onPress={() => navigate('LIST_SUBJECT')}></TouchableOpacity>
+        style={[styles.btn]}
+        onPress={() => navigate('LIST_SUBJECT')}>
+        <Text style={styles.txt}>Subject</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
 export default HomeScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.grey,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  btn: {
+    width: 240,
+    height: 40,
+    backgroundColor: Colors.black,
+    justifyContent: 'center',
+    marginBottom: 24,
+  },
+  txt: {
+    fontSize: 17,
+    color: Colors.white,
+    textAlign: 'center',
+  },
+  txtTitle: {
+    fontSize: 20,
+    color: Colors.black,
+    marginBottom: 24,
+    textTransform: 'uppercase',
+  },
+});

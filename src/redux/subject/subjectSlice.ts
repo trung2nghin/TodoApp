@@ -19,8 +19,10 @@ export const subjectSlice = createSlice({
   name: 'subject',
   initialState: initialState,
   reducers: {
-    // getSubject: (state, action) => {},
-    // addSubject: (state, action) => {},
+    setSubjectReload(state) {
+      state.data = [];
+      return state;
+    },
   },
   extraReducers(builder) {
     builder
@@ -53,6 +55,6 @@ export const subjectSlice = createSlice({
   },
 });
 
-export const {} = subjectSlice.actions;
+export const { setSubjectReload } = subjectSlice.actions;
 
 export default subjectSlice.reducer;
