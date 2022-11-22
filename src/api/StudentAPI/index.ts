@@ -8,6 +8,9 @@ const StudentAPI = {
   postStudentThunk(payload: Student) {
     return AxiosClient.post('student', payload);
   },
+  putStudentThunk(payload: Student) {
+    return AxiosClient.post(`student/:${payload.id}`, payload);
+  },
 };
 
 export default StudentAPI;

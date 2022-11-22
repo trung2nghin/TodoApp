@@ -6,16 +6,20 @@ import { HomeScreenProp } from '../../navigation/configs';
 import StudentAPI from '../../api/StudentAPI';
 import { useAppDispatch, useAppSelector } from '../../hooks/useRedux';
 import { getStudent } from '../../redux/student/studentThunk';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 const HomeScreen: FC = () => {
   const { navigate } = useNavigation<HomeScreenProp>();
+  // launchCamera(options?, callback);
 
   return (
     <View>
       <Text>HomeScreen</Text>
       <TouchableOpacity
         style={{ width: 100, height: 25, backgroundColor: 'red' }}
-        onPress={() => navigate('LIST_STUDENT')}></TouchableOpacity>
+        onPress={() => {
+          navigate('LIST_STUDENT');
+        }}></TouchableOpacity>
       <TouchableOpacity
         style={{ width: 100, height: 25, backgroundColor: 'blue' }}
         onPress={() => navigate('LIST_SUBJECT')}></TouchableOpacity>

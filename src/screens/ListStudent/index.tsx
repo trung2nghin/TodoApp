@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -23,13 +23,14 @@ const ListStudentScreen: FC = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [onEndReachedCount, setOnEndReachedCount] = useState(1);
   const [begin, setBegin] = useState(false);
-  const listRef = useRef(null);
 
-  const { navigate } = useNavigation<ListStudentScreenProp>();
-  const { loading, data } = useAppSelector(
+  const { navigate, goBack, replace } = useNavigation<ListStudentScreenProp>();
+  const isFocus = useIsFocused();
+  const { loading, dataStudent } = useAppSelector(
     state => state.reducer.studentReducer,
   );
   const dispatch = useAppDispatch();
+  console.log(dataStudent.length, onEndReachedCount);
 
   useEffect(() => {
     dispatch(getStudent(onEndReachedCount));
@@ -49,9 +50,13 @@ const ListStudentScreen: FC = () => {
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     dispatch(setStudentReload());
-    await dispatch(getStudent(1));
+    if (onEndReachedCount === 1) {
+      await dispatch(getStudent(1));
+    } else {
+      setOnEndReachedCount(1);
+    }
     setRefreshing(false);
-  }, []);
+  }, [onEndReachedCount]);
 
   const renderItem = useCallback(
     ({ item }: { item: Student }) => {
@@ -59,10 +64,7 @@ const ListStudentScreen: FC = () => {
         <TouchableOpacity
           onPress={() => navigate('STUDENT_INFO', { item })}
           style={styles.btnListChildContainer}>
-          <Image
-            source={{ uri: item?.avatar }}
-            style={{ width: 76, height: 76, borderRadius: 2 }}
-          />
+          <Image source={{ uri: item?.avatar }} style={styles.img} />
           <View style={styles.viewTxtInfo}>
             <Text style={styles.txtInfo}>Name: {item?.name}</Text>
             <Text style={styles.txtInfo}>Age: {item?.age}</Text>
@@ -76,23 +78,32 @@ const ListStudentScreen: FC = () => {
         </TouchableOpacity>
       );
     },
-    [data],
+    [dataStudent],
   );
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text>ListStudentScreen</Text>
-      <TouchableOpacity
-        onPress={() => navigate('ADD_STUDENT')}
-        style={{
-          width: 100,
-          height: 20,
-          backgroundColor: 'blue',
-        }}></TouchableOpacity>
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => {
+            goBack(), dispatch(setStudentReload());
+          }}>
+          <Text>Back</Text>
+        </TouchableOpacity>
+        <Text>LIST STUDENT</Text>
+        <TouchableOpacity
+          onPress={() => {
+            navigate('ADD_STUDENT');
+            dispatch(setStudentReload());
+          }}>
+          <Text>ADD</Text>
+        </TouchableOpacity>
+      </View>
       <FlatList
-        data={data}
+        data={dataStudent}
         renderItem={renderItem}
         keyExtractor={item => item.id}
+        showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -124,15 +135,14 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: Colors.grey,
+    paddingHorizontal: 16,
   },
   list: {
     flex: 1,
     width: '100%',
-    paddingHorizontal: 16,
   },
   btnListChildContainer: {
     width: '100%',
-    maxWidth: '130%',
     height: Metrics.screen.height / 6,
     flexDirection: 'row',
     alignItems: 'center',
@@ -156,4 +166,12 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     fontFamily: 'NotoSans-Medium',
   },
+  header: {
+    width: '100%',
+    height: Metrics.screen.height / 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  img: { width: 76, height: 76, borderRadius: 2 },
 });

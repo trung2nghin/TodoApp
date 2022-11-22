@@ -9,16 +9,14 @@ import {
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { Colors } from '../../assets';
-import { Subject } from '../../types/subject';
+import { Student } from '../../types/student';
 
 interface Props {
-  data: Array<Subject>;
+  data: Array<Student>;
 }
 
-const List: FC<Props> = ({ data }) => {
-  console.log(data);
-
-  const renderItem = ({ item }: { item: Subject }) => {
+const ListStudent: FC<Props> = ({ data }) => {
+  const renderItem = ({ item }: { item: Student }) => {
     return (
       <TouchableOpacity
         style={{
@@ -28,12 +26,12 @@ const List: FC<Props> = ({ data }) => {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
+        <Ionicons name="chevron-up" size={24} />
         <Text style={styles.txt}>{item.name}</Text>
-        <Ionicons name="chevron-down" size={24} />
       </TouchableOpacity>
     );
   };
-  
+
   return (
     <FlatList
       data={data}
@@ -50,7 +48,7 @@ const List: FC<Props> = ({ data }) => {
   );
 };
 
-export default List;
+export default ListStudent;
 
 const styles = StyleSheet.create({
   txt: {

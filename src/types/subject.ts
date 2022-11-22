@@ -1,8 +1,9 @@
+import { Student } from './student';
+
 export interface Subject {
-  createdAt: string;
   name: string;
   teacher: string;
   classroom: string;
-  student: Array<string>;
+  student: Array<Student>;
   id: string;
 }

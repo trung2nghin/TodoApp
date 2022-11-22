@@ -27,6 +27,11 @@ export type StudentInfoScreenRouteProp = RouteProp<
   'STUDENT_INFO'
 >;
 
+export type AddStudentScreenRouteProp = RouteProp<
+  RootStackParamList,
+  'ADD_STUDENT'
+>;
+
 export type SubjectInfoScreenRouteProp = RouteProp<
   RootStackParamList,
   'SUBJECT_INFO'
@@ -39,6 +44,11 @@ export type HomeScreenProp = StackNavigationProp<RootStackParamList, 'HOME'>;
 export type ListStudentScreenProp = StackNavigationProp<
   RootStackParamList,
   'LIST_STUDENT'
+>;
+
+export type AddStudentScreenProp = StackNavigationProp<
+  RootStackParamList,
+  'ADD_STUDENT'
 >;
 
 export type ListSubjectScreenProp = StackNavigationProp<

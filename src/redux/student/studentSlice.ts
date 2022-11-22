@@ -6,13 +6,13 @@ import { getStudent, postStudent } from './studentThunk';
 interface StudentState {
   loading: boolean;
   error: string | null;
-  data: Student[];
+  dataStudent: Student[];
 }
 
 const initialState: StudentState = {
   loading: false,
   error: null,
-  data: [],
+  dataStudent: [],
 };
 
 export const studentSlice = createSlice({
@@ -22,7 +22,7 @@ export const studentSlice = createSlice({
     // getStudent: (state, action) => {},
     // addStudent: (state, action) => {},
     setStudentReload(state) {
-      state.data = [];
+      state.dataStudent = [];
       return state;
     },
   },
@@ -35,7 +35,7 @@ export const studentSlice = createSlice({
         getStudent.fulfilled,
         (state, action: PayloadAction<Student[]>) => {
           state.loading = false;
-          state.data = state.data.concat(action.payload);
+          state.dataStudent = state.dataStudent.concat(action.payload);
         },
       )
       .addCase(getStudent.rejected, (state, action: PayloadAction<any>) => {
@@ -48,7 +48,7 @@ export const studentSlice = createSlice({
         postStudent.fulfilled,
         (state, action: PayloadAction<Student[]>) => {
           state.loading = false;
-          state.data = state.data.concat(action.payload);
+          state.dataStudent = state.dataStudent.concat(action.payload);
         },
       )
       .addCase(postStudent.rejected, (state, action: PayloadAction<any>) => {
